@@ -130,9 +130,9 @@ function setup() {
 	pontuação = 0; //pontuação inicial do jogo
 
 	for(i=0; i<contI; i++) {
-		tamFase1[i] = random(40, 50);
-		tamFase3[i] = random(50, 60);
-		tamFase5[i] = random(60, 70);
+		tamFase1[i] = random(50, 60);
+		tamFase3[i] = random(60, 70);
+		tamFase5[i] = random(70, 80);
 	}
 	
 	//vetor para a posição inicial dos inimigos
@@ -372,14 +372,14 @@ function TelaJogo() {
 		tempoSair++;
 		console.log("tempo " + tempoSair);
 		if(tempoSair <= 100) {
-			jogadorY -= 10;
+			jogadorY -= 7;
 			console.log("tempo <= 100 " + tempoSair);
 			for(i=0; i<contI; i++) {
 				if(inimigoX[i] < width/2) {
-					inimigoX[i] -= 10;
+					inimigoX[i] -= 5;
 				}
 				else {
-					inimigoX[i] += 10;
+					inimigoX[i] += 6;
 				}
 			}
 		}
@@ -462,6 +462,7 @@ function FaseChefe() {
 
 		//colisão entre o projétio e o chefe
 		if(projetioY < ChefeY+tamChefeY && projetioY > ChefeY && projetioX > ChefeX && projetioX < ChefeX+tamChefeX) {
+			projetioX = -width;
 			projetioY = -windowHeight;
 			VidaChefe--;
 			acertouChefe++;
@@ -622,7 +623,7 @@ function TelaVitoria() {
 	jogadorX = width/2;
 	jogadorY = windowHeight;
 	projetioX = jogadorX+tamJogX/2;
-	projetioY = jogadorY;
+	projetioY = windowHeight + tamProY;
 	movimentoI = 2;
 	movimentoP = 6;
 	fase = 1;
@@ -647,6 +648,7 @@ function TelaVitoria() {
 	bonusVelPY = -random(2000, 3000);
 	tempoSair = 0;
 	tempoEntrar = 0;
+	animação = 0;
 
 
 	for(i=0; i<contI; i++) {
@@ -681,7 +683,7 @@ function TelaFinal() {
 	jogadorX = width/2;
 	jogadorY = windowHeight;
 	projetioX = jogadorX+tamJogX/2;
-	projetioY = jogadorY;
+	projetioY = windowHeight + tamProY;
 	movimentoI = 2;
 	movimentoP = 6;
 	fase = 1;
@@ -706,6 +708,7 @@ function TelaFinal() {
 	bonusVelPY = -random(2000, 3000);
 	tempoSair = 0;
 	tempoEntrar = 0;
+	animação = 0;
 
 	for(i=0; i<contI; i++) {
 		inimigoX[i] = random(0, width - (tamanhoI[i]) - 70); //posição inicial aleatória
