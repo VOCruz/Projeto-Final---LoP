@@ -53,6 +53,7 @@ var compBarraX, compBarraY;
 var r, g, b;
 var taxaDimBarra;
 var taxaDimCorB;
+var aumVelChefe;
 
 var desenharChefe = true;
 //Chefe
@@ -66,6 +67,7 @@ var Fim = false;
 var resNormal = true;
 
 var imgJ, imgI = [], fundo, imgBP, imgBV;
+var trilha, somExpl;
 
 //-----------------------------------------------------------------------------
 var explosãoX, explosãoY;
@@ -73,7 +75,7 @@ var explosão = [];
 var nomeAnim = "Imagens/explosion"
 var quantImagem = 10;
 var animação = 0;
-var velAnim = 8;
+var velAnim = 7;
 var tempoAnim = 0;
 //-----------------------------------------------------------------------------
 
@@ -99,15 +101,16 @@ function preload() {
 	imgBV = loadImage("Imagens/coracao.png")
 
 
-	//som = loadSound("Som/airship.ogg");
+	trilha = loadSound("Som/trilha.ogg");
+	somExpl = loadSound("Som/explosao.ogg");
 }
 
 function setup() {
 	createCanvas(650, windowHeight); //dimensões do cenário
 
 	//música
-	//som.setVolume(0.1);
-	//som.play();
+	trilha.setVolume(0.2);
+	trilha.play();
 
 	jogadorX = width/2; //posição inicial do jogador em X
 	jogadorY = windowHeight; //posição inicial do jogador em Y
@@ -144,13 +147,13 @@ function setup() {
 	}
 
 	bonusVidaX = random(50, width-50); //posição inicial aleatória
-	bonusVidaY = -random(4000, 5000); //posição inicial aleatória
+	bonusVidaY = -random(9000, 10000); //posição inicial aleatória
 	tamBonVidaX = 25; //dimensões do bônus de vida
 	tamBonVidaY = 25; //dimensões do bônus de vida
 	movimentoBVida = 2; //velocidade de movimento do bônus
 
 	bonusVelPX = random(50, width-50); //posição inicial aleatória
-	bonusVelPY = -random(2000, 3000); //posição inicial aleatória
+	bonusVelPY = -random(5000, 6000); //posição inicial aleatória
 	tamBonVelPX = 20; //dimensões do bônus da velocidade do projétio
 	tamBonVelPY = 30; //dimensões do bônus da velocidade do projétio
 	movimentoBVelP = 2; //velocidade de movimento do bônus
@@ -170,11 +173,12 @@ function setup() {
 	movTiroChefe = 5;
 	acertouChefe = 0;
 
-	VidaChefe = 10;
+	VidaChefe = 20;
 	compBarraX = tamChefeX;
 	compBarraY = 5;
 	taxaDimBarra = (compBarraX/VidaChefe);
 	taxaDimCorB = (VidaChefe - 1);
+	aumVelChefe = (VidaChefe/2);
 	r = 0;
 	g = 255;
 	b = 0;
@@ -337,41 +341,41 @@ function TelaJogo() {
 	image(imgBP, bonusVelPX, bonusVelPY, tamBonVelPX, tamBonVelPY);
 
 	//informações que aparrecem na tela
-	textSize(16); //tamanho
+	textSize(18); //tamanho
 	fill(255); //cor
 	noStroke(); //sem contorno
-	text("Vida: " + vidaJ, 550, 30); //texto
-	text("Pontuação: " + pontuação, 30, 30); //texto
-	text("Tempo: " + tempo, 30, windowHeight-40);
-	text("Fase: " + fase, 550, windowHeight-40);
+	text("Vida: " + vidaJ, 30, windowHeight-40); //texto
+	text("Pontuação: " + pontuação, 30, 40); //texto
+	//text("Tempo: " + tempo, 530, 40);
+	text("Fase: " + fase, 530, windowHeight-40);
 
 	//fases
-	if(pontuação >= 5) {
+	if(tempo >= 1200) {
 		movimentoI = 3;
 		fase = 2;
 	}
-	if(pontuação >= 10) {
+	if(tempo >= 2400) {
 		for(i=0; i<contI; i++) {
 			tamanhoI[i] = tamFase3[i];
 		}
 		fase = 3;
 	}
-	if(pontuação >= 15) {
+	if(tempo >= 3600) {
 		movimentoI = 4;
 		resNormal = false;
 		fase = 4;
 	}
-	if(pontuação >= 20) {
+	if(tempo >= 4800) {
 		for(i=0; i<contI; i++) {
 			tamanhoI[i] = tamFase5[i];
 		}
 		fase = 5;
 	}
-	if(pontuação >= 25) {
+	if(tempo >= 6000) {
 		
 		tempoSair++;
 		console.log("tempo " + tempoSair);
-		if(tempoSair <= 100) {
+		if(tempoSair <= 150) {
 			jogadorY -= 7;
 			console.log("tempo <= 100 " + tempoSair);
 			for(i=0; i<contI; i++) {
@@ -412,8 +416,11 @@ function FaseChefe() {
 		jogadorY = windowHeight + tamJogY;
 		ChefeY = (windowHeight-windowHeight) - tamChefeY;
 		ChefeY += 10;
+		ChefeX = width/2;
 		movChefeX = true;
 		movChefeY = true;
+		tiroChefeX = ChefeX + tamChefeX/2;
+		tiroChefeY = ChefeY + tamTiroCY*2;
 	}
 	else {
 		tempo++;
@@ -559,14 +566,15 @@ function FaseChefe() {
 			image(imgChefe, ChefeX, ChefeY, tamChefeX, tamChefeY);
 		}
 
-		textSize(14);
+		textSize(18);
 		noStroke();
 		fill(255);
-		text("vida do Chefe: " + VidaChefe, 50, 50);
-		text("Vida: " + vidaJ, 50, windowHeight-50);
-		text("Tempo: " + tempo, 30, windowHeight-40);
+		//text("vida do Chefe: " + VidaChefe, 50, 50);
+		text("Vida: " + vidaJ, 30, windowHeight-40);
+		text("Fase: CHEFE", 510, windowHeight-40);
+		//text("Tempo: " + tempo, 30, windowHeight-40);
 
-		if(VidaChefe <= 5) {
+		if(VidaChefe <= aumVelChefe) {
 			movimentoChefe = 3;
 			movTiroChefe = 8;
 		}
@@ -581,6 +589,10 @@ function FaseChefe() {
 				console.log("contador da animação: " + animação);
 
 				image(explosão[animação], explosãoX, explosãoY, 200, 200);
+
+				somExpl.setVolume(0.2);
+				somExpl.play();
+
 				animação++;
 				//console.log(animação);
 
@@ -618,6 +630,7 @@ function TelaVitoria() {
 	text("		PARABÉNS! \nVOCÊ GANHOU!", 170, (windowHeight/2)-40);
 	textSize(20);
 	text("(Aperte R para recomeçar)", 210, (windowHeight/2)+40);
+	//text("Sua pontuação foi: " + pontuação, 200, (windowHeight/2)+50);
 	
 	tempo = 0;
 	jogadorX = width/2;
@@ -643,9 +656,9 @@ function TelaVitoria() {
 	g = 255;
 	resNormal = true;
 	bonusVidaX = random(50, width-50);
-	bonusVidaY = -random(4000, 5000); 
+	bonusVidaY = -random(9000, 10000); 
 	bonusVelPX = random(50, width-50);
-	bonusVelPY = -random(2000, 3000);
+	bonusVelPY = -random(5000, 6000);
 	tempoSair = 0;
 	tempoEntrar = 0;
 	animação = 0;
@@ -678,6 +691,7 @@ function TelaFinal() {
 	text("FIM DE JOGO", 200, windowHeight/2);
 	textSize(20);
 	text("(Aperte R para recomeçar)", 210, (windowHeight/2)+30);
+	//text("Sua pontuação foi: " + pontuação, 200, (windowHeight/2)+40);
 	
 	tempo = 0;
 	jogadorX = width/2;
@@ -703,9 +717,9 @@ function TelaFinal() {
 	g = 255;
 	resNormal = true;
 	bonusVidaX = random(50, width-50);
-	bonusVidaY = -random(4000, 5000); 
+	bonusVidaY = -random(9000, 10000); 
 	bonusVelPX = random(50, width-50);
-	bonusVelPY = -random(2000, 3000);
+	bonusVelPY = -random(5000, 6000);
 	tempoSair = 0;
 	tempoEntrar = 0;
 	animação = 0;
